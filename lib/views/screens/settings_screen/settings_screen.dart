@@ -102,8 +102,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           difficultyLevel: difficultyLevel,
         );
       }
-      difficultyLevel = _getDifficultyLevel();
+      _setDifficulty(difficultyLevel);
+      difficultyLevel = await LocalRepository.getFromLocalStorage();
       log(difficultyLevel.name);
+
       // ignore: use_build_context_synchronously
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
@@ -115,8 +117,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         (route) => false,
       );
     } else {
-      difficultyLevel = _getDifficultyLevel();
+      _setDifficulty(difficultyLevel);
       log(difficultyLevel.name);
+
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) => const MainScreen(),
@@ -129,14 +132,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  QuestionsDifficulty _getDifficultyLevel() {
-    Future<String?> value = LocalRepository.getFromLocalStorage();
-    if (value == QuestionsDifficulty.easy.name) {
-      return QuestionsDifficulty.easy;
-    } else if (value == QuestionsDifficulty.medium.name) {
-      return QuestionsDifficulty.medium;
-    } else {
-      return QuestionsDifficulty.difficult;
-    }
+  void _setDifficulty(QuestionsDifficulty questionsDifficulty) {
+    LocalRepository.saveToLocalStorage(questionsDifficulty);
   }
 }

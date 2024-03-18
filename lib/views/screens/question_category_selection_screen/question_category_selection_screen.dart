@@ -114,17 +114,19 @@ class _QuestionCategorySelectionScreenState
     });
     final controller = Controller();
     List<MCQModel> mcqList;
+    QuestionsDifficulty difficultyLevel =
+        await LocalRepository.getFromLocalStorage();
     if (questionCategory == QuestionCategory.geography ||
         questionCategory == QuestionCategory.history ||
         questionCategory == QuestionCategory.sports) {
       mcqList = await controller.getSingleMCQTypeList(
         questionCategory: questionCategory,
-        difficultyLevel: _getDifficultyLevel(),
+        difficultyLevel: difficultyLevel,
       );
     } else {
       mcqList = await controller.getMultipleMCQTypeQuestions(
         questionCategory: questionCategory,
-        difficultyLevel: _getDifficultyLevel(),
+        difficultyLevel: difficultyLevel,
       );
     }
     setState(() {
@@ -140,16 +142,5 @@ class _QuestionCategorySelectionScreenState
       ),
       (route) => false,
     );
-  }
-
-  QuestionsDifficulty _getDifficultyLevel() {
-    Future<String?> value = LocalRepository.getFromLocalStorage();
-    if (value == QuestionsDifficulty.easy.name) {
-      return QuestionsDifficulty.easy;
-    } else if (value == QuestionsDifficulty.medium.name) {
-      return QuestionsDifficulty.medium;
-    } else {
-      return QuestionsDifficulty.difficult;
-    }
   }
 }
