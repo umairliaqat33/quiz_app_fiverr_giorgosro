@@ -1,6 +1,10 @@
+// ignore_for_file: unnecessary_null_comparison, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:quiz_app/config/size_config.dart';
+import 'package:quiz_app/repository/local_repository.dart';
 import 'package:quiz_app/utils/colors.dart';
+import 'package:quiz_app/utils/enums.dart';
 import 'package:quiz_app/views/screens/question_category_selection_screen/question_category_selection_screen.dart';
 import 'package:quiz_app/views/screens/settings_screen/settings_screen.dart';
 import 'package:quiz_app/views/widgets/buttons/custom_button.dart';
@@ -45,10 +49,15 @@ class MainScreen extends StatelessWidget {
     );
   }
 
-  void startGame(BuildContext context) {
+  Future<void> startGame(BuildContext context) async {
+    QuestionsDifficulty? qd = await LocalRepository.getFromLocalStorage();
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const QuestionCategorySelectionScreen(),
+        builder: (context) => qd == null
+            ? const SettingsScreen(
+                toCategoryScreen: true,
+              )
+            : const QuestionCategorySelectionScreen(),
       ),
     );
   }

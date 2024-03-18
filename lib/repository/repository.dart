@@ -84,9 +84,10 @@ class Repository {
         questionCategory == QuestionCategory.arts) {
       category = getMultipleQuestionCategory(questionCategory);
     }
+    //entertainment film,music,tv ok
     for (int i = 0; i < category.length; i++) {
       var responseBody = await get(Uri.parse(
-          '$apiURL?amount=48&category=${category[i]}&difficulty=${difficultyLevel.name}&type=multiple'));
+          '$apiURL?amount=${category[i] == 10 || category[i] == 25 ? 10 : 48}&category=${category[i]}&difficulty=${category[i] == 25 ? QuestionsDifficulty.easy.name : difficultyLevel.name}&type=multiple'));
       Map<String, dynamic> result = json.decode(responseBody.body);
       if (result['results'] != null) {
         List<dynamic> list = result['results'];
@@ -123,4 +124,5 @@ class Repository {
       return [];
     }
   }
+  //11
 }

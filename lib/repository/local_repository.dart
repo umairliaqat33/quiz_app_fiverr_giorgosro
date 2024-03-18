@@ -14,7 +14,7 @@ class LocalRepository {
     );
   }
 
-  static Future<QuestionsDifficulty> getFromLocalStorage() async {
+  static Future<QuestionsDifficulty?> getFromLocalStorage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String value = prefs.getString('difficultyType').toString();
     log(value);
@@ -22,8 +22,10 @@ class LocalRepository {
       return QuestionsDifficulty.easy;
     } else if (value == QuestionsDifficulty.medium.name) {
       return QuestionsDifficulty.medium;
+    } else if (value == QuestionsDifficulty.hard.name) {
+      return QuestionsDifficulty.hard;
     } else {
-      return QuestionsDifficulty.difficult;
+      return null;
     }
   }
 }

@@ -10,6 +10,7 @@ import 'package:quiz_app/repository/local_repository.dart';
 import 'package:quiz_app/utils/colors.dart';
 import 'package:quiz_app/utils/enums.dart';
 import 'package:quiz_app/views/screens/main_screen/main_screen.dart';
+import 'package:quiz_app/views/screens/question_category_selection_screen/question_category_selection_screen.dart';
 import 'package:quiz_app/views/screens/question_screen/question_screen.dart';
 import 'package:quiz_app/views/widgets/buttons/custom_button.dart';
 
@@ -17,8 +18,10 @@ class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
     super.key,
     this.questionCategory,
+    this.toCategoryScreen = false,
   });
   final QuestionCategory? questionCategory;
+  final bool toCategoryScreen;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -65,10 +68,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     SizedBox(height: SizeConfig.height10(context)),
                     CustomButton(
-                      title: QuestionsDifficulty.difficult.name,
+                      title: QuestionsDifficulty.hard.name,
                       buttonColor: whiteColor,
                       onPressed: () => selectDifficulty(
-                        QuestionsDifficulty.difficult,
+                        QuestionsDifficulty.hard,
                         context,
                       ),
                     ),
@@ -86,7 +89,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _loading = true;
     });
-    if (widget.questionCategory != null) {
+    if (widget.toCategoryScreen) {
+      LocalRepository.saveToLocalStorage(difficultyLevel);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const QuestionCategorySelectionScreen(),
+        ),
+      );
+    } else if (widget.questionCategory != null) {
       final controller = Controller();
       List<MCQModel> mcqList;
       if (widget.questionCategory == QuestionCategory.geography ||
@@ -103,7 +113,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         );
       }
       _setDifficulty(difficultyLevel);
-      difficultyLevel = await LocalRepository.getFromLocalStorage();
+      difficultyLevel = (await LocalRepository.getFromLocalStorage())!;
       log(difficultyLevel.name);
 
       // ignore: use_build_context_synchronously

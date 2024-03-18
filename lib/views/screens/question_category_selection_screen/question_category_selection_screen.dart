@@ -115,7 +115,7 @@ class _QuestionCategorySelectionScreenState
     final controller = Controller();
     List<MCQModel> mcqList;
     QuestionsDifficulty difficultyLevel =
-        await LocalRepository.getFromLocalStorage();
+        (await LocalRepository.getFromLocalStorage())!;
     if (questionCategory == QuestionCategory.geography ||
         questionCategory == QuestionCategory.history ||
         questionCategory == QuestionCategory.sports) {
