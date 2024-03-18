@@ -15,30 +15,40 @@ class NetworkConnectivitController extends GetxController {
 
   void _updateConnectivityStatus(ConnectivityResult connectivityResult) {
     if (connectivityResult == ConnectivityResult.none) {
-      Get.rawSnackbar(
-        message: "No Internet",
-        messageText: const Text(
-          "Please connect to internet",
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
+      Get.dialog(
+        barrierDismissible: false,
+        const AlertDialog(
+          icon: Icon(
+            Icons.wifi_off,
             color: whiteColor,
+            size: 20,
+          ),
+          title: Text(
+            "No Internet",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: whiteColor,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                Text(
+                  "Please connect to internet",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: whiteColor,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        isDismissible: false,
-        duration: const Duration(
-          minutes: 1,
-        ),
-        icon: const Icon(
-          Icons.wifi_off,
-          color: whiteColor,
-        ),
-        margin: EdgeInsets.zero,
-        snackPosition: SnackPosition.TOP,
-        snackStyle: SnackStyle.GROUNDED,
       );
     } else {
-      Get.closeCurrentSnackbar();
+      Get.back();
     }
   }
 }

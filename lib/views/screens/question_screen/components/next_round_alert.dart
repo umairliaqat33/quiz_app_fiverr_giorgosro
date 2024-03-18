@@ -10,6 +10,19 @@ class NextRoundAlert extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      contentPadding: EdgeInsets.only(
+        left: SizeConfig.width10(context),
+        right: SizeConfig.width10(context),
+        top: SizeConfig.height20(context) * 2,
+        bottom: SizeConfig.height20(context) * 2,
+      ),
+      title: const Text(
+        "Round complete",
+        style: TextStyle(
+          fontSize: 20,
+          color: whiteColor,
+        ),
+      ),
       content: SingleChildScrollView(
         child: Column(
           children: [

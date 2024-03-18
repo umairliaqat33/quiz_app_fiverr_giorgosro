@@ -1,3 +1,5 @@
+// ignore_for_file: unrelated_type_equality_checks
+
 import 'package:flutter/material.dart';
 import 'package:quiz_app/config/size_config.dart';
 import 'package:quiz_app/controller/controller.dart';
@@ -117,12 +119,12 @@ class _QuestionCategorySelectionScreenState
         questionCategory == QuestionCategory.sports) {
       mcqList = await controller.getSingleMCQTypeList(
         questionCategory: questionCategory,
-        difficultyLevel: LocalRepository.difficultyLevel,
+        difficultyLevel: _getDifficultyLevel(),
       );
     } else {
       mcqList = await controller.getMultipleMCQTypeQuestions(
         questionCategory: questionCategory,
-        difficultyLevel: LocalRepository.difficultyLevel,
+        difficultyLevel: _getDifficultyLevel(),
       );
     }
     setState(() {
@@ -133,9 +135,21 @@ class _QuestionCategorySelectionScreenState
       MaterialPageRoute(
         builder: (context) => QuestionScreen(
           mcqList: mcqList,
+          questionCategory: questionCategory,
         ),
       ),
       (route) => false,
     );
+  }
+
+  QuestionsDifficulty _getDifficultyLevel() {
+    Future<String?> value = LocalRepository.getFromLocalStorage();
+    if (value == QuestionsDifficulty.easy.name) {
+      return QuestionsDifficulty.easy;
+    } else if (value == QuestionsDifficulty.medium.name) {
+      return QuestionsDifficulty.medium;
+    } else {
+      return QuestionsDifficulty.difficult;
+    }
   }
 }

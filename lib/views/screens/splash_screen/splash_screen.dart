@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app/config/size_config.dart';
+import 'package:quiz_app/repository/local_repository.dart';
 import 'package:quiz_app/utils/colors.dart';
+import 'package:quiz_app/utils/enums.dart';
 import 'package:quiz_app/views/screens/main_screen/main_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -14,6 +16,11 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    LocalRepository.getFromLocalStorage().then((value) {
+      if (value == null) {
+        LocalRepository.saveToLocalStorage(QuestionsDifficulty.easy);
+      }
+    });
     _createSplash();
   }
 

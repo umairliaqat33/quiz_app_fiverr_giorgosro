@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, unrelated_type_equality_checks
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -25,49 +25,56 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  bool _loading = false;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(),
-        body: Padding(
-          padding: EdgeInsets.only(
-            left: SizeConfig.width15(context) + 1,
-            right: SizeConfig.width15(context) + 1,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CustomButton(
-                title: QuestionsDifficulty.easy.name,
-                buttonColor: whiteColor,
-                onPressed: () => selectDifficulty(
-                  QuestionsDifficulty.easy,
-                  context,
+        body: _loading
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: whiteColor,
+                ),
+              )
+            : Padding(
+                padding: EdgeInsets.only(
+                  left: SizeConfig.width15(context) + 1,
+                  right: SizeConfig.width15(context) + 1,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomButton(
+                      title: QuestionsDifficulty.easy.name,
+                      buttonColor: whiteColor,
+                      onPressed: () => selectDifficulty(
+                        QuestionsDifficulty.easy,
+                        context,
+                      ),
+                    ),
+                    SizedBox(height: SizeConfig.height10(context)),
+                    CustomButton(
+                      title: QuestionsDifficulty.medium.name,
+                      buttonColor: whiteColor,
+                      onPressed: () => selectDifficulty(
+                        QuestionsDifficulty.medium,
+                        context,
+                      ),
+                    ),
+                    SizedBox(height: SizeConfig.height10(context)),
+                    CustomButton(
+                      title: QuestionsDifficulty.difficult.name,
+                      buttonColor: whiteColor,
+                      onPressed: () => selectDifficulty(
+                        QuestionsDifficulty.difficult,
+                        context,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: SizeConfig.height10(context)),
-              CustomButton(
-                title: QuestionsDifficulty.medium.name,
-                buttonColor: whiteColor,
-                onPressed: () => selectDifficulty(
-                  QuestionsDifficulty.medium,
-                  context,
-                ),
-              ),
-              SizedBox(height: SizeConfig.height10(context)),
-              CustomButton(
-                title: QuestionsDifficulty.difficult.name,
-                buttonColor: whiteColor,
-                onPressed: () => selectDifficulty(
-                  QuestionsDifficulty.difficult,
-                  context,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -76,6 +83,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     QuestionsDifficulty difficultyLevel,
     BuildContext context,
   ) async {
+    setState(() {
+      _loading = true;
+    });
     if (widget.questionCategory != null) {
       final controller = Controller();
       List<MCQModel> mcqList;
@@ -92,25 +102,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
           difficultyLevel: difficultyLevel,
         );
       }
-      LocalRepository.difficultyLevel = difficultyLevel;
+      difficultyLevel = _getDifficultyLevel();
+      log(difficultyLevel.name);
       // ignore: use_build_context_synchronously
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) => QuestionScreen(
             mcqList: mcqList,
+            questionCategory: widget.questionCategory!,
           ),
         ),
         (route) => false,
       );
     } else {
-      LocalRepository.difficultyLevel = difficultyLevel;
-      log(LocalRepository.difficultyLevel.name);
+      difficultyLevel = _getDifficultyLevel();
+      log(difficultyLevel.name);
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) => const MainScreen(),
         ),
         (route) => false,
       );
+    }
+    setState(() {
+      _loading = true;
+    });
+  }
+
+  QuestionsDifficulty _getDifficultyLevel() {
+    Future<String?> value = LocalRepository.getFromLocalStorage();
+    if (value == QuestionsDifficulty.easy.name) {
+      return QuestionsDifficulty.easy;
+    } else if (value == QuestionsDifficulty.medium.name) {
+      return QuestionsDifficulty.medium;
+    } else {
+      return QuestionsDifficulty.difficult;
     }
   }
 }
