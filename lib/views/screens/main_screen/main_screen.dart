@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app/config/size_config.dart';
 import 'package:quiz_app/utils/colors.dart';
+import 'package:quiz_app/views/screens/question_category_selection_screen/question_category_selection_screen.dart';
+import 'package:quiz_app/views/screens/settings_screen/settings_screen.dart';
 import 'package:quiz_app/views/widgets/buttons/custom_button.dart';
 
 class MainScreen extends StatelessWidget {
@@ -22,17 +24,31 @@ class MainScreen extends StatelessWidget {
               CustomButton(
                 title: "Start Game",
                 buttonColor: whiteColor,
-                onPressed: () {},
+                onPressed: () => startGame(context),
               ),
               SizedBox(height: SizeConfig.height10(context)),
               CustomButton(
                 title: "Settings",
                 buttonColor: whiteColor,
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsScreen(),
+                    ),
+                  );
+                },
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void startGame(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const QuestionCategorySelectionScreen(),
       ),
     );
   }
