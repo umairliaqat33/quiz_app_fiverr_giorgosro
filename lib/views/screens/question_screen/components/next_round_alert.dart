@@ -5,7 +5,11 @@ import 'package:quiz_app/views/screens/main_screen/main_screen.dart';
 import 'package:quiz_app/views/widgets/buttons/custom_button.dart';
 
 class NextRoundAlert extends StatelessWidget {
-  const NextRoundAlert({super.key});
+  const NextRoundAlert({
+    super.key,
+    required this.nextRoundFunction,
+  });
+  final Function nextRoundFunction;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +34,7 @@ class NextRoundAlert extends StatelessWidget {
               title: "Next round",
               textColor: blackColor,
               buttonColor: whiteColor,
-              onPressed: () {},
+              onPressed: () => nextRoundFunction(),
             ),
             SizedBox(height: SizeConfig.height10(context)),
             CustomButton(

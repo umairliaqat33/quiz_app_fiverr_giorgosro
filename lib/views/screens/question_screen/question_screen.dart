@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:quiz_app/config/size_config.dart';
 import 'package:quiz_app/models/mcq_model/mcq_model.dart';
+import 'package:quiz_app/models/question_model/question_model.dart';
+import 'package:quiz_app/services/data_parcer_service.dart';
 import 'package:quiz_app/utils/colors.dart';
 import 'package:quiz_app/utils/enums.dart';
 import 'package:quiz_app/views/screens/main_screen/main_screen.dart';
@@ -24,15 +27,20 @@ class QuestionScreen extends StatefulWidget {
 }
 
 class _QuestionScreenState extends State<QuestionScreen> {
-  int _index = 0;
-  bool _revealed = false;
-  List<Text> optionList = [];
+  int _mcqIndex = 0;
+  int _questionIndex = 0;
+  int _roundNumber = 1;
+  bool _mcqAnswerReveal = false;
+  bool _questionAnswerReveal = false;
+  List<QuestionModel> _questionsList = [];
+  List<Text> _optionList = [];
+
   @override
   void initState() {
     if (widget.mcqList.isNotEmpty) {
-      optionList = [
+      _optionList = [
         Text(
-          widget.mcqList[_index].incorrectOptions1,
+          widget.mcqList[_mcqIndex].incorrectOptions1,
           textAlign: TextAlign.start,
           style: const TextStyle(
             color: whiteColor,
@@ -40,7 +48,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
           ),
         ),
         Text(
-          widget.mcqList[_index].incorrectOptions2,
+          widget.mcqList[_mcqIndex].incorrectOptions2,
           textAlign: TextAlign.start,
           style: const TextStyle(
             color: whiteColor,
@@ -48,7 +56,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
           ),
         ),
         Text(
-          widget.mcqList[_index].incorrectOptions3,
+          widget.mcqList[_mcqIndex].incorrectOptions3,
           textAlign: TextAlign.start,
           style: const TextStyle(
             color: whiteColor,
@@ -56,7 +64,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
           ),
         ),
         Text(
-          widget.mcqList[_index].answer,
+          widget.mcqList[_mcqIndex].answer,
           textAlign: TextAlign.start,
           style: const TextStyle(
             color: whiteColor,
@@ -64,8 +72,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
           ),
         ),
       ];
-      optionList.shuffle();
+      _getQuestionsList(widget.questionCategory);
+      _optionList.shuffle();
+      _questionsList.shuffle();
     }
+
     super.initState();
   }
 
@@ -142,87 +153,125 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       ),
                     ],
                   )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.mcqList[_index].question,
-                        textAlign: TextAlign.start,
-                        style: const TextStyle(
-                          color: whiteColor,
-                          fontSize: 20,
-                        ),
-                      ),
-                      ListTile(
-                        leading: const Text(
-                          "(a)",
-                          style: TextStyle(
-                            color: greenColor,
-                            fontSize: 17,
+                : _roundNumber % 2 == 0
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            _questionsList[_questionIndex].question,
+                            textAlign: TextAlign.start,
+                            style: const TextStyle(
+                              color: whiteColor,
+                              fontSize: 20,
+                            ),
                           ),
-                        ),
-                        title: optionList[0],
-                      ),
-                      ListTile(
-                        leading: const Text(
-                          "(b)",
-                          style: TextStyle(
-                            color: greenColor,
-                            fontSize: 17,
+                          SizedBox(height: SizeConfig.height10(context)),
+                          Visibility(
+                            visible: _questionAnswerReveal,
+                            child: Text(
+                              _questionsList[_questionIndex].answer,
+                              style: const TextStyle(
+                                color: whiteColor,
+                                fontSize: 20,
+                              ),
+                            ),
                           ),
-                        ),
-                        title: optionList[1],
-                      ),
-                      ListTile(
-                        leading: const Text(
-                          "(c)",
-                          style: TextStyle(
-                            color: greenColor,
-                            fontSize: 17,
+                          SizedBox(height: SizeConfig.height10(context)),
+                          CustomButton(
+                            textColor: blackColor,
+                            buttonColor: whiteColor,
+                            title: "Reveal answer",
+                            onPressed: () => _revealAnswer(),
                           ),
-                        ),
-                        title: optionList[2],
-                      ),
-                      ListTile(
-                        leading: const Text(
-                          "(d)",
-                          style: TextStyle(
-                            color: greenColor,
-                            fontSize: 17,
+                        ],
+                      )
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            widget.mcqList[_mcqIndex].question,
+                            textAlign: TextAlign.start,
+                            style: const TextStyle(
+                              color: whiteColor,
+                              fontSize: 20,
+                            ),
                           ),
-                        ),
-                        title: optionList[3],
-                      ),
-                      Visibility(
-                        visible: _revealed,
-                        child: Text(
-                          widget.mcqList[_index].answer,
-                          textAlign: TextAlign.start,
-                          style: const TextStyle(
-                            color: whiteColor,
-                            fontSize: 20,
+                          ListTile(
+                            leading: const Text(
+                              "(a)",
+                              style: TextStyle(
+                                color: greenColor,
+                                fontSize: 17,
+                              ),
+                            ),
+                            title: _optionList[0],
                           ),
-                        ),
+                          ListTile(
+                            leading: const Text(
+                              "(b)",
+                              style: TextStyle(
+                                color: greenColor,
+                                fontSize: 17,
+                              ),
+                            ),
+                            title: _optionList[1],
+                          ),
+                          ListTile(
+                            leading: const Text(
+                              "(c)",
+                              style: TextStyle(
+                                color: greenColor,
+                                fontSize: 17,
+                              ),
+                            ),
+                            title: _optionList[2],
+                          ),
+                          ListTile(
+                            leading: const Text(
+                              "(d)",
+                              style: TextStyle(
+                                color: greenColor,
+                                fontSize: 17,
+                              ),
+                            ),
+                            title: _optionList[3],
+                          ),
+                          Visibility(
+                            visible: _mcqAnswerReveal,
+                            child: Text(
+                              widget.mcqList[_mcqIndex].answer,
+                              textAlign: TextAlign.start,
+                              style: const TextStyle(
+                                color: whiteColor,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: SizeConfig.height10(context),
+                          ),
+                          CustomButton(
+                            textColor: blackColor,
+                            buttonColor: whiteColor,
+                            title: "Reveal answer",
+                            onPressed: () => _revealAnswer(),
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        height: SizeConfig.height10(context),
-                      ),
-                      CustomButton(
-                        textColor: blackColor,
-                        buttonColor: whiteColor,
-                        title: "Reveal answer",
-                        onPressed: () => _revealAnswer(),
-                      ),
-                    ],
-                  ),
           )),
     );
   }
 
   void _revealAnswer() {
-    setState(() {
-      _revealed = true;
-    });
+    if (_roundNumber % 2 != 0) {
+      _mcqAnswerReveal = true;
+      _questionAnswerReveal = false;
+    } else {
+      _questionAnswerReveal = true;
+      _mcqAnswerReveal = false;
+    }
+    setState(() {});
 
     Future.delayed(
       const Duration(
@@ -233,10 +282,68 @@ class _QuestionScreenState extends State<QuestionScreen> {
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            return const NextRoundAlert();
+            return NextRoundAlert(
+              nextRoundFunction: () => _nextRound(),
+            );
           },
         );
       },
     );
+  }
+
+  void _nextRound() {
+    if (_roundNumber % 2 == 0) {
+      _mcqIndex++;
+      _optionList.clear();
+      if (widget.mcqList.isNotEmpty) {
+        _optionList = [
+          Text(
+            widget.mcqList[_mcqIndex].incorrectOptions1,
+            textAlign: TextAlign.start,
+            style: const TextStyle(
+              color: whiteColor,
+              fontSize: 17,
+            ),
+          ),
+          Text(
+            widget.mcqList[_mcqIndex].incorrectOptions2,
+            textAlign: TextAlign.start,
+            style: const TextStyle(
+              color: whiteColor,
+              fontSize: 17,
+            ),
+          ),
+          Text(
+            widget.mcqList[_mcqIndex].incorrectOptions3,
+            textAlign: TextAlign.start,
+            style: const TextStyle(
+              color: whiteColor,
+              fontSize: 17,
+            ),
+          ),
+          Text(
+            widget.mcqList[_mcqIndex].answer,
+            textAlign: TextAlign.start,
+            style: const TextStyle(
+              color: whiteColor,
+              fontSize: 17,
+            ),
+          ),
+        ];
+        _optionList.shuffle();
+      }
+    } else {
+      _questionIndex++;
+    }
+    _roundNumber++;
+    setState(() {});
+    Navigator.of(context).pop();
+  }
+
+  void _getQuestionsList(QuestionCategory questionCategory) async {
+    DataParcerServices dataParcerServices = DataParcerServices();
+    _questionsList = await dataParcerServices.parseTextFile(
+        questionCategory: widget.questionCategory);
+    _questionsList.shuffle();
   }
 }
