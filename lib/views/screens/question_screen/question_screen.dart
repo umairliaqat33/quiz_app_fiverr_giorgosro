@@ -384,8 +384,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _secondsElapsed++;
-        if (_secondsElapsed == 10) {
-          // Stop the timer after 10 seconds
+        if (_secondsElapsed == 5) {
           timer.cancel();
         }
       });
