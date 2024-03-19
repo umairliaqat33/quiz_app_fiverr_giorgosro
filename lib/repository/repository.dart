@@ -87,7 +87,7 @@ class Repository {
     //entertainment film,music,tv ok
     for (int i = 0; i < category.length; i++) {
       var responseBody = await get(Uri.parse(
-          '$apiURL?amount=${category[i] == 10 || category[i] == 25 ? 10 : 48}&category=${category[i]}&difficulty=${category[i] == 25 ? QuestionsDifficulty.easy.name : difficultyLevel.name}&type=multiple'));
+          '$apiURL?amount=${category[i] == 10 || category[i] == 25 ? 10 : 48}&category=${category[i]}&difficulty=${category[i] == 25 || category[i] == 11 ? QuestionsDifficulty.easy.name : (category[i] == 10 || category[i] == 14) && difficultyLevel == QuestionsDifficulty.hard ? QuestionsDifficulty.medium.name : category[i] == 12 ? QuestionsDifficulty.easy : difficultyLevel.name}&type=multiple'));
       Map<String, dynamic> result = json.decode(responseBody.body);
       if (result['results'] != null) {
         List<dynamic> list = result['results'];
@@ -119,10 +119,10 @@ class Repository {
     } else if (questionCategory == QuestionCategory.nature) {
       return [17, 27];
     } else if (questionCategory == QuestionCategory.arts) {
-      return [25, 10, 11, 12, 14];
+      return [25, 10, 11, 12, 14]; //working all on easy, medium
     } else {
       return [];
     }
   }
-  //11
+  //10 no work on hard,
 }
