@@ -1,7 +1,9 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:get/state_manager.dart';
+
 import 'package:quiz_app/utils/colors.dart';
 
 class NetworkConnectivitController extends GetxController {

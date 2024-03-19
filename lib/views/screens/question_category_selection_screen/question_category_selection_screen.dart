@@ -1,6 +1,7 @@
 // ignore_for_file: unrelated_type_equality_checks
 
 import 'package:flutter/material.dart';
+
 import 'package:quiz_app/config/size_config.dart';
 import 'package:quiz_app/controller/controller.dart';
 import 'package:quiz_app/models/mcq_model/mcq_model.dart';

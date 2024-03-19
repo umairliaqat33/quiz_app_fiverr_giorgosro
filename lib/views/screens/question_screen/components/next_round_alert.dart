@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:quiz_app/config/size_config.dart';
 import 'package:quiz_app/utils/colors.dart';
 import 'package:quiz_app/views/screens/main_screen/main_screen.dart';

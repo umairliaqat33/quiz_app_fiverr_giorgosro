@@ -1,6 +1,7 @@
 // ignore_for_file: unnecessary_null_comparison, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+
 import 'package:quiz_app/config/size_config.dart';
 import 'package:quiz_app/repository/local_repository.dart';
 import 'package:quiz_app/utils/colors.dart';

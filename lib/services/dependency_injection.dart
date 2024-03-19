@@ -1,4 +1,5 @@
 import 'package:get/instance_manager.dart';
+
 import 'package:quiz_app/controller/network_connectivity_controller.dart';
 
 class DependencyInjection {

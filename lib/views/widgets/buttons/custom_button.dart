@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:quiz_app/config/size_config.dart';
 
 class CustomButton extends StatelessWidget {

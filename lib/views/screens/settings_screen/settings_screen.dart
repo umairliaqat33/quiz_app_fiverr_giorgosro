@@ -50,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CustomButton(
-                      title: QuestionsDifficulty.easy.name,
+                      title: QuestionsDifficulty.easy.name.toUpperCase(),
                       buttonColor: whiteColor,
                       onPressed: () => selectDifficulty(
                         QuestionsDifficulty.easy,
@@ -59,7 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     SizedBox(height: SizeConfig.height10(context)),
                     CustomButton(
-                      title: QuestionsDifficulty.medium.name,
+                      title: QuestionsDifficulty.medium.name.toUpperCase(),
                       buttonColor: whiteColor,
                       onPressed: () => selectDifficulty(
                         QuestionsDifficulty.medium,
@@ -68,7 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     SizedBox(height: SizeConfig.height10(context)),
                     CustomButton(
-                      title: QuestionsDifficulty.hard.name,
+                      title: QuestionsDifficulty.hard.name.toUpperCase(),
                       buttonColor: whiteColor,
                       onPressed: () => selectDifficulty(
                         QuestionsDifficulty.hard,

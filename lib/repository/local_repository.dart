@@ -1,7 +1,8 @@
 import 'dart:developer';
 
-import 'package:quiz_app/utils/enums.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:quiz_app/utils/enums.dart';
 
 class LocalRepository {
   static void saveToLocalStorage(

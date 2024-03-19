@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+
 import 'package:quiz_app/config/size_config.dart';
 import 'package:quiz_app/models/mcq_model/mcq_model.dart';
 import 'package:quiz_app/models/question_model/question_model.dart';
@@ -34,7 +35,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
   bool _questionAnswerReveal = false;
   List<QuestionModel> _questionsList = [];
   List<Text> _optionList = [];
-
+  late Timer _timer;
+  int _secondsElapsed = 0;
   @override
   void initState() {
     if (widget.mcqList.isNotEmpty) {
@@ -78,6 +80,12 @@ class _QuestionScreenState extends State<QuestionScreen> {
     }
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -153,7 +161,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       ),
                     ],
                   )
-                : _roundNumber % 2 == 0
+                : _roundNumber % 2 == 0 && _mcqIndex <= widget.mcqList.length
                     ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -183,6 +191,17 @@ class _QuestionScreenState extends State<QuestionScreen> {
                             buttonColor: whiteColor,
                             title: "Reveal answer",
                             onPressed: () => _revealAnswer(),
+                          ),
+                          Visibility(
+                            visible: _secondsElapsed != 0,
+                            child: Text(
+                              "($_secondsElapsed)",
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: whiteColor,
+                                fontSize: 20,
+                              ),
+                            ),
                           ),
                         ],
                       )
@@ -257,6 +276,17 @@ class _QuestionScreenState extends State<QuestionScreen> {
                             title: "Reveal answer",
                             onPressed: () => _revealAnswer(),
                           ),
+                          Visibility(
+                            visible: _secondsElapsed != 0,
+                            child: Text(
+                              "($_secondsElapsed)",
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: whiteColor,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
           )),
@@ -271,6 +301,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
       _questionAnswerReveal = true;
       _mcqAnswerReveal = false;
     }
+    _startAndCancelTimer();
     setState(() {});
 
     Future.delayed(
@@ -292,7 +323,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
   }
 
   void _nextRound() {
-    if (_roundNumber % 2 == 0) {
+    if (_roundNumber % 2 == 0 && widget.mcqList.length >= _mcqIndex) {
       _mcqIndex++;
       _optionList.clear();
       if (widget.mcqList.isNotEmpty) {
@@ -333,9 +364,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
         _optionList.shuffle();
       }
     } else {
+      _questionsList.shuffle();
       _questionIndex++;
     }
     _roundNumber++;
+    _secondsElapsed = 0;
     setState(() {});
     Navigator.of(context).pop();
   }
@@ -345,5 +378,17 @@ class _QuestionScreenState extends State<QuestionScreen> {
     _questionsList = await dataParcerServices.parseTextFile(
         questionCategory: widget.questionCategory);
     _questionsList.shuffle();
+  }
+
+  void _startAndCancelTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _secondsElapsed++;
+        if (_secondsElapsed == 10) {
+          // Stop the timer after 10 seconds
+          timer.cancel();
+        }
+      });
+    });
   }
 }

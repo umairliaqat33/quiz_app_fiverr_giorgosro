@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/http.dart';
+
 import 'package:quiz_app/models/mcq_model/mcq_model.dart';
 import 'package:quiz_app/utils/constants.dart';
 import 'package:quiz_app/utils/enums.dart';
@@ -34,7 +35,7 @@ class Repository {
       }
 
       var responseBody = await get(Uri.parse(
-          '$apiURL?amount=48&category=$category&difficulty=${difficultyLevel.name}&type=multiple'));
+          '$apiURL?amount=${category == 21 && difficultyLevel == QuestionsDifficulty.hard ? 10 : 48}&category=$category&difficulty=${category == 21 && difficultyLevel == QuestionsDifficulty.easy ? QuestionsDifficulty.medium.name : difficultyLevel.name}&type=multiple'));
       Map<String, dynamic> result = json.decode(responseBody.body);
       List<dynamic> list = result['results'];
       mcqList = seperateList(list);
@@ -84,10 +85,10 @@ class Repository {
         questionCategory == QuestionCategory.arts) {
       category = getMultipleQuestionCategory(questionCategory);
     }
-    //entertainment film,music,tv ok
+    //19 easy, 17 hard
     for (int i = 0; i < category.length; i++) {
       var responseBody = await get(Uri.parse(
-          '$apiURL?amount=${category[i] == 10 || category[i] == 25 ? 10 : 48}&category=${category[i]}&difficulty=${category[i] == 25 || category[i] == 11 ? QuestionsDifficulty.easy.name : (category[i] == 10 || category[i] == 14) && difficultyLevel == QuestionsDifficulty.hard ? QuestionsDifficulty.medium.name : category[i] == 12 ? QuestionsDifficulty.easy : difficultyLevel.name}&type=multiple'));
+          '$apiURL?amount=${category[i] == 10 || category[i] == 25 || category[i] == 27 || category[i] == 18 || category[i] == 19 ? 10 : 48}&category=${category[i]}&difficulty=${category[i] == 25 || category[i] == 11 ? QuestionsDifficulty.easy.name : (category[i] == 10 || category[i] == 14) && difficultyLevel == QuestionsDifficulty.hard ? QuestionsDifficulty.medium.name : category[i] == 12 || category[i] == 10 ? QuestionsDifficulty.medium.name : category[i] == 27 ? QuestionsDifficulty.hard.name : category[i] == 19 ? QuestionsDifficulty.medium.name : category[i] == 19 ? QuestionsDifficulty.medium.name : difficultyLevel.name}&type=multiple'));
       Map<String, dynamic> result = json.decode(responseBody.body);
       if (result['results'] != null) {
         List<dynamic> list = result['results'];
@@ -117,12 +118,11 @@ class Repository {
     if (questionCategory == QuestionCategory.science) {
       return [18, 19, 30, 17];
     } else if (questionCategory == QuestionCategory.nature) {
-      return [17, 27];
+      return [17, 27]; //working all on easy, medium and hard.
     } else if (questionCategory == QuestionCategory.arts) {
-      return [25, 10, 11, 12, 14]; //working all on easy, medium
+      return [25, 10, 11, 12, 14]; //working all on easy, medium and hard.
     } else {
       return [];
     }
   }
-  //10 no work on hard,
 }
